@@ -1,0 +1,2 @@
+# kraken
+Self-managed container
