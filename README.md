@@ -1,6 +1,11 @@
 # kraken
 Self-managed container for GitLab
 
+To build the new Docker image run:
+  ```
+  source ./build.sh
+  ```
+
 # Set Host IP
 On Mac:
   ```
@@ -27,7 +32,7 @@ Copy example configuration and fill it
   cp ./example.gl.evn ./gl.env
   ```
 
-Copy application ID and secret from your running Gitlab instance
+Copy application ID and secret and personal access token from your running Gitlab instance
 
 ## Gitlab:
 
