@@ -2,3 +2,5 @@ bb.env
 gl.env
 *.pem
 .container
+kraken.tar.gz
+registry
