@@ -13,16 +13,12 @@ services:
       - '3306:3306'
     volumes:
       - ./.container/mysqldata:/var/lib/mysql
-    networks:
-      - kraken
 
   redis:
     restart: always
     image: redis:5.0.5-alpine
     ports:
       - '6379:6379'
-    networks:
-      - kraken
 
   suggestion:
     restart: always
@@ -36,8 +32,6 @@ services:
       - '5000:5000'
       - '5001:5001'
       - '5002:5002'
-    networks:
-      - kraken
   
   bundle_server:
     restart: unless-stopped
@@ -54,8 +48,6 @@ services:
       - '8001:8001'
     volumes:
       - ./.container/clones:/server/clones
-    networks:
-      - kraken
 
   api:
     image: dc_api:latest
@@ -86,8 +78,6 @@ services:
       - bundle_server
     ports:
       - '3000:3000'
-    networks:
-      - kraken
     extra_hosts:
       - 'localdc:${HOST_IP:-localhost}'
 
@@ -100,10 +90,5 @@ services:
       VUE_APP_OP: ${VUE_APP_OP}
     ports:
       - '8080:8080'
-    networks:
-      - kraken
     extra_hosts:
       - 'localdc:${HOST_IP:-localhost}'
-
-networks:
-  kraken:
