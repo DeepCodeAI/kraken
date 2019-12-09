@@ -1,0 +1,105 @@
+version: '3.7'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password --event-scheduler=ON
+    environment:
+      MYSQL_USER: root
+      MYSQL_DATABASE: deepcode
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    ports:
+      - '3306:3306'
+    volumes:
+      - ./.container/mysqldata:/var/lib/mysql
+    networks:
+      - kraken
+
+  redis:
+    restart: always
+    image: redis:5.0.5-alpine
+    ports:
+      - '6379:6379'
+    networks:
+      - kraken
+
+  suggestion:
+    restart: always
+    image: dc_suggest:latest
+    entrypoint: []
+    # --num_suggest_server_threads 2 --num_upload_server_threads 2 --num_lint_upload_server_threads 2 --num_parse_threads 2
+    command: ./suggest_v5 --models ./models --parsers_dir parsing --linters_dir linters --transform python,java,javascript --alsologtostderr --eslint --pmd --pylint --tslint 
+    environment: 
+      GLOG_minloglevel: 2
+    ports:
+      - '5000:5000'
+      - '5001:5001'
+      - '5002:5002'
+    networks:
+      - kraken
+  
+  bundle_server:
+    restart: unless-stopped
+    image: dc_bundle:latest
+    entrypoint: []
+    # --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4
+    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:5000" --upload_server="suggestion:5001" --lint_upload_server="suggestion:5002" --temp_dir="./clones" --num_lint_upload_threads_per_repo=4 --alsologtostderr
+    environment: 
+      GLOG_minloglevel: 2
+    depends_on:
+      - redis
+      - suggestion
+    ports:
+      - '8001:8001'
+    volumes:
+      - ./.container/clones:/server/clones
+    networks:
+      - kraken
+
+  api:
+    image: dc_api:latest
+    environment:
+      PRODUCT: ${PRODUCT}
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: deepcode
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: ""
+      NODE_ENV: production
+      BUNDLE_SERVER_URL: http://bundle_server:8001
+      HOST_URL: ${HOST_URL}
+      EXPOSED_HOST_URL: ${EXPOSED_HOST_URL}
+      LOG_GIT_HUB_RESPONSE_TIME: 0
+      GIT_LAB_URL: ${GIT_LAB_URL}
+      GIT_LAB_APP_ID: ${GIT_LAB_APP_ID}
+      GIT_LAB_APP_SECRET: ${GIT_LAB_APP_SECRET}
+      # DEBUG: app:*
+    restart: always
+    command: ["yarn", "start"]
+    depends_on:
+      - db
+      - bundle_server
+    ports:
+      - '3000:3000'
+    networks:
+      - kraken
+    extra_hosts:
+      - 'localdc:${HOST_IP:-localhost}'
+
+  website:
+    image: dc_website:latest
+    depends_on:
+      - api
+    restart: always
+    environment:
+      VUE_APP_OP: ${VUE_APP_OP}
+    ports:
+      - '8080:8080'
+    networks:
+      - kraken
+    extra_hosts:
+      - 'localdc:${HOST_IP:-localhost}'
+
+networks:
+  kraken:
