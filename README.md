@@ -18,9 +18,10 @@ Manually copy this dynamic IP address to /etc/hosts using sudo for hostname loca
   docker-compose -f docker-compose.gitlab.yml up -d 
   ```
 
-Once it's running, setup an Application
+Once it's running, setup an Application following:
+https://www.deepcode.ai/docs/Self-Managed%20Integrations%2FGitLab
 
-# Configuration
+## Configuration
 Copy example configuration and fill it
   ```
   cp ./example.gl.evn ./gl.env
@@ -28,8 +29,34 @@ Copy example configuration and fill it
 
 Copy application ID and secret from your running Gitlab instance
 
-# Run container for Gitlab:
+## Gitlab:
 
   ```
   docker run --rm -it -v '/var/run/docker.sock:/var/run/docker.sock' --env HOST_IP --env-file ./gl.env kraken
+  ```
+
+# Bitbucket server
+  ```
+  docker-compose -f docker-compose.bitbucket.yml up -d 
+  ```
+
+Once it's running, setup an Application following: https://www.deepcode.ai/docs/Self-Managed%20Integrations%2FBitbucket%20Server
+
+## Configuration
+Copy example configuration and fill it
+  ```
+  cp ./example.bb.evn ./bb.env
+  ```
+
+Fill all required fields
+
+Export private key into variable:
+  ```
+  export BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY=$(cat ./deepcode.pem)
+  ```
+
+## Run container for Gitlab:
+
+  ```
+  docker run --rm -it -v '/var/run/docker.sock:/var/run/docker.sock' --env HOST_IP --env BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY --env-file ./bb.env kraken
   ```

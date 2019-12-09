@@ -1,6 +1,7 @@
 bb.env
 gl.env
 *.pem
+*.pub
 .container
 kraken.tar.gz
 registry
