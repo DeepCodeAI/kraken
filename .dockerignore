@@ -7,3 +7,9 @@
 Dockerfile
 *.tar.gz
 data
+run_local*
+build.sh
+gl.env
+bb.env
+README*
+version

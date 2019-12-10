@@ -22,8 +22,16 @@ docker pull deepbuild:5000/dc_website:latest
 docker tag deepbuild:5000/dc_website:latest dc_website:latest
 docker save dc_website:latest | gzip > registry/dc_website.tar.gz
 
+# Version is the last commit's hash
+export VERSION=$(git log -1 --pretty=%H)
+
 echo "Packaging altogether"
-docker build -t deepcode .
+docker build --build-arg VERSION --build-arg EXPIRATION_DATE -t deepcode .
 
 echo "Saving docker image"
-docker save deepcode | gzip > deepcode.tar.gz
+docker save deepcode | gzip > deepcode_$VERSION.tar.gz
+
+echo "Pushing docker image to registry"
+docker tag deepcode deepbuild:5000/deepcode:$VERSION
+docker tag deepcode deepbuild:5000/deepcode:latest
+docker push deepbuild:5000/deepcode

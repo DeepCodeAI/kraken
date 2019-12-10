@@ -12,7 +12,7 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - ./.container/mysqldata:/var/lib/mysql
+      - ${PWD:-.}/.container/mysqldata:/var/lib/mysql
 
   redis:
     restart: always
@@ -20,7 +20,7 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - ./.container/redisdata:/data
+      - ${PWD:-.}/.container/redisdata:/data
 
   suggestion:
     restart: always
@@ -49,7 +49,7 @@ services:
     ports:
       - '8001:8001'
     volumes:
-      - ./.container/clones:/server/clones
+      - ${PWD:-.}/.container/clones:/server/clones
 
   api:
     image: dc_api:latest
@@ -81,7 +81,7 @@ services:
     ports:
       - '3000:3000'
     extra_hosts:
-      - 'localdc:${HOST_IP:-localhost}'
+      - 'localdc:${HOST_IP:-127.0.0.1}'
 
   website:
     image: dc_website:latest
@@ -89,8 +89,8 @@ services:
       - api
     restart: always
     environment:
-      VUE_APP_OP: ${VUE_APP_OP}
+      PRODUCT: ${PRODUCT}
     ports:
       - '${FRONT_PORT:-8080}:8080'
     extra_hosts:
-      - 'localdc:${HOST_IP:-localhost}'
+      - 'localdc:${HOST_IP:-127.0.0.1}'

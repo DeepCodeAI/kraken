@@ -5,9 +5,20 @@ RUN apk add --no-cache \
   --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
   bash
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+ENV USR_DIR /usr/src/app
 
-CMD source ./start.sh
+RUN mkdir -p ${USR_DIR}
+WORKDIR ${USR_DIR}
+CMD source ${USR_DIR}/start.sh
 
-COPY . .
+ARG VERSION=latest
+ENV VERSION ${VERSION}
+
+ARG EXPIRATION_DATE=''
+ENV EXPIRATION_DATE ${EXPIRATION_DATE}
+
+COPY start.sh ./
+COPY docker-compose* ./
+COPY registry ./registry
+COPY example* ./
+

@@ -1,5 +1,6 @@
-# kraken
-Self-managed container for GitLab
+# Deepcode build/test guide
+
+Self-managed container for Deepcode
 
 To build the new Docker image run:
   ```
@@ -18,7 +19,7 @@ On Linux:
   ```
 Manually copy this dynamic IP address to /etc/hosts using sudo for hostname localdc
 
-# Run local instance of Gitlab
+# Run local instance of Gitlab together with Deepcode container
   ```
   docker-compose -f docker-compose.gitlab.yml up -d 
   ```
@@ -34,10 +35,9 @@ Copy example configuration and fill it
 
 Copy application ID and secret and personal access token from your running Gitlab instance
 
-## Gitlab:
-
+## Run container for Gitlab integration:
   ```
-  docker run --rm -it -v '/var/run/docker.sock:/var/run/docker.sock' --env HOST_IP --env-file ./gl.env kraken
+  source ./run_local_gl_op.sh
   ```
 
 # Bitbucket server
@@ -60,30 +60,7 @@ Export private key into variable:
   export BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY=$(cat ./deepcode.pem)
   ```
 
-## Run container for Gitlab:
-
-  ```
-  docker run 
-    --rm                     \ # Remove the container after it was stopped.
-    -it                      \ # (Optional) to acquire terminal
-    -v '/var/run/docker.sock:/var/run/docker.sock' \ # Mount Docker socket file
-    --env-file ./gl.env      \ # Configuration file created earlier
-    --env HOST_IP            \ # Optional for local tests only
-    -env FRONT_PORT=8080     \ # (Optional) # Expose port of container.
-    -v $(pwd)/data:/usr/src/app/.container  \ # Mount directory for storing container data between restarts
-    deepcode                   # Name of docker image to run.
-  ```
-
 ## Run container for BitBucket Server:
   ```
-  docker run 
-    --rm                     \ # Remove the container after it was stopped.
-    -it                      \ # (Optional) to acquire terminal
-    -v '/var/run/docker.sock:/var/run/docker.sock' \ # Mount Docker socket file
-    --env-file ./gl.env      \ # Configuration file created earlier
-    --env HOST_IP            \ # Optional for local tests only
-    --env "BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY=$(cat ./deepcode.pem)" \ # Private key required for authentication
-    -env FRONT_PORT=8080     \ # (Optional) # Expose port of container.
-    -v $(pwd)/data:/usr/src/app/.container  \ # Mount directory for storing container data between restarts
-    deepcode                   # Name of docker image to run.
+  source ./run_local_bb_op.sh
   ```
