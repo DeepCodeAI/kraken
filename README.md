@@ -63,5 +63,27 @@ Export private key into variable:
 ## Run container for Gitlab:
 
   ```
-  docker run --rm -it -v '/var/run/docker.sock:/var/run/docker.sock' --env HOST_IP --env BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY --env-file ./bb.env kraken
+  docker run 
+    --rm                     \ # Remove the container after it was stopped.
+    -it                      \ # (Optional) to acquire terminal
+    -v '/var/run/docker.sock:/var/run/docker.sock' \ # Mount Docker socket file
+    --env-file ./gl.env      \ # Configuration file created earlier
+    --env HOST_IP            \ # Optional for local tests only
+    -env FRONT_PORT=8080     \ # (Optional) # Expose port of container.
+    -v $(pwd)/data:/usr/src/app/.container  \ # Mount directory for storing container data between restarts
+    deepcode                   # Name of docker image to run.
+  ```
+
+## Run container for BitBucket Server:
+  ```
+  docker run 
+    --rm                     \ # Remove the container after it was stopped.
+    -it                      \ # (Optional) to acquire terminal
+    -v '/var/run/docker.sock:/var/run/docker.sock' \ # Mount Docker socket file
+    --env-file ./gl.env      \ # Configuration file created earlier
+    --env HOST_IP            \ # Optional for local tests only
+    --env "BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY=$(cat ./deepcode.pem)" \ # Private key required for authentication
+    -env FRONT_PORT=8080     \ # (Optional) # Expose port of container.
+    -v $(pwd)/data:/usr/src/app/.container  \ # Mount directory for storing container data between restarts
+    deepcode                   # Name of docker image to run.
   ```
