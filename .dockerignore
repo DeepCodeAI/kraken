@@ -5,4 +5,5 @@
 *.pem
 *.pub
 Dockerfile
-kraken.tar.gz
+*.tar.gz
+data

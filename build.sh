@@ -23,7 +23,7 @@ docker tag deepbuild:5000/dc_website:latest dc_website:latest
 docker save dc_website:latest | gzip > registry/dc_website.tar.gz
 
 echo "Packaging altogether"
-docker build -t kraken .
+docker build -t deepcode .
 
 echo "Saving docker image"
-docker save kraken | gzip > kraken.tar.gz
+docker save deepcode | gzip > deepcode.tar.gz

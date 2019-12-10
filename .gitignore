@@ -3,5 +3,6 @@ gl.env
 *.pem
 *.pub
 .container
-kraken.tar.gz
+*.tar.gz
 registry
+data
