@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 if [ -z ${EXPIRATION_DATE+x} ]; then
-  echo "Please set value to environment EXPIRATION_DATE";
+  echo 'Please set date in format "%Y-%m-%d" to environment EXPIRATION_DATE, like: ';
+  echo 'export EXPIRATION_DATE="2020-03-01"'
   return;
 fi
 

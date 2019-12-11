@@ -3,13 +3,14 @@
 : "${PRODUCT:?Need to set PRODUCT non-empty}"
 : "${HOST_URL:?Need to set HOST_URL non-empty}"
 
-if [ -n ${EXPIRATION_DATE} ]; then
-  expire=$(date -d "${EXPIRATION_DATE}" +%Y%m%d)
-  now=$(date +%Y%m%d)
-  if [ $now -ge $expire ]; then
-    echo "Your container is expired. Please request a newer version on deepcode.ai";
-    exit 1;
-  fi
+if [ -z ${EXPIRATION_DATE+x} ]; then
+  echo "Expiration date must be set. This is a bug. Please contact Deepcode for correct version of the file"
+  exit 1
+fi
+
+if [ $(date +%s) -gt $(date -d $EXPIRATION_DATE +%s) ]; then
+  echo "Your container is expired. Please request a newer version on deepcode.ai"
+  exit 1
 fi
 
 docker load -i $USR_DIR/registry/dc_suggest.tar.gz
