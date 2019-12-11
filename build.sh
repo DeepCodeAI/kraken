@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -z ${EXPIRATION_DATE+x} ]; then
+  echo "Please set value to environment EXPIRATION_DATE";
+  return;
+fi
+
 mkdir -p registry
 
 echo "Saving suggest image"
@@ -29,7 +34,7 @@ echo "Packaging altogether"
 docker build --build-arg VERSION --build-arg EXPIRATION_DATE -t deepcode .
 
 echo "Saving docker image"
-docker save deepcode | gzip > deepcode_$VERSION.tar.gz
+docker save deepcode | gzip > deepcode_${VERSION:0:5}_$EXPIRATION_DATE.tar.gz
 
 echo "Pushing docker image to registry"
 docker tag deepcode deepbuild:5000/deepcode:$VERSION
