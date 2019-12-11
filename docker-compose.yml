@@ -16,7 +16,7 @@ services:
 
   redis:
     restart: always
-    image: redis:5.0.5-alpine
+    image: redis:5.0.7-alpine
     ports:
       - '6379:6379'
     volumes:
@@ -73,6 +73,7 @@ services:
       BIT_BUCKET_SERVER_USER_NAME: ${BIT_BUCKET_SERVER_USER_NAME}
       BIT_BUCKET_SERVER_PASSWORD: ${BIT_BUCKET_SERVER_PASSWORD}
       BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY: ${BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY}
+      NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-1}
     restart: always
     command: ["yarn", "start"]
     depends_on:
