@@ -2,10 +2,15 @@
 
 Self-managed container for Deepcode
 
-To build the new Docker image run:
+
+## Build process
+The process is super simple. Just run:
   ```
   source ./build.sh
   ```
+
+It will create a new tarball. Just upload it to https://drive.google.com/drive/u/0/folders/1jjFQA6aGNuOeEhg0JaUDC7mKbDWa5J-X
+
 
 # Set Host IP
 On Mac:
