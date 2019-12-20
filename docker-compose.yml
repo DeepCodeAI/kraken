@@ -9,16 +9,12 @@ services:
       MYSQL_USER: root
       MYSQL_DATABASE: deepcode
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
-    ports:
-      - '3306:3306'
     volumes:
       - ${PWD:-.}/.container/mysqldata:/var/lib/mysql
 
   redis:
     restart: always
     image: redis:5.0.7-alpine
-    ports:
-      - '6379:6379'
     volumes:
       - ${PWD:-.}/.container/redisdata:/data
 
@@ -26,28 +22,24 @@ services:
     restart: always
     image: dc_suggest:latest
     entrypoint: []
-    # --num_suggest_server_threads 2 --num_upload_server_threads 2 --num_lint_upload_server_threads 2 --num_parse_threads 2
-    command: ./suggest_v5 --models ./models --parsers_dir parsing --linters_dir linters --transform python,java,javascript --alsologtostderr --eslint --pmd --pylint --tslint 
+    command: ./suggest_v5 --models ./models --parsers_dir parsing --linters_dir linters --transform python,java,javascript --alsologtostderr --eslint --pmd --pylint --tslint --num_suggest_server_threads 2 --num_upload_server_threads 2 --num_lint_upload_server_threads 2 --num_parse_threads 2
     environment: 
       GLOG_minloglevel: 2
     ports:
-      - '5000:5000'
-      - '5001:5001'
-      - '5002:5002'
+      - '5000-5002'
   
   bundle_server:
     restart: unless-stopped
     image: dc_bundle:latest
     entrypoint: []
-    # --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4
-    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:5000" --upload_server="suggestion:5001" --lint_upload_server="suggestion:5002" --temp_dir="./clones" --num_lint_upload_threads_per_repo=4 --alsologtostderr
+    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:${SUGGESTION_SERVER_PORT:-5000}" --upload_server="suggestion:${SUGGESTION_UPLOAD_PORT:-5001}" --lint_upload_server="suggestion:${SUGGESTION_LINT_PORT:-5002}" --temp_dir="./clones" --alsologtostderr --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4 --num_lint_upload_threads_per_repo=4
     environment: 
       GLOG_minloglevel: 2
     depends_on:
       - redis
       - suggestion
     ports:
-      - '8001:8001'
+      - '8001'
     volumes:
       - ${PWD:-.}/.container/clones:/server/clones
 
@@ -76,11 +68,11 @@ services:
       NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-1}
     restart: always
     command: ["yarn", "start"]
+    ports:
+      - '3000'
     depends_on:
       - db
       - bundle_server
-    ports:
-      - '3000:3000'
     extra_hosts:
       - 'localdc:${HOST_IP:-127.0.0.1}'
 
@@ -91,6 +83,7 @@ services:
     restart: always
     environment:
       PRODUCT: ${PRODUCT}
+      FRONT_PORT: ${FRONT_PORT:-8080}
     ports:
       - '${FRONT_PORT:-8080}:8080'
     extra_hosts:
