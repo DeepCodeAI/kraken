@@ -42,6 +42,8 @@ services:
       - '8001'
     volumes:
       - ${PWD:-.}/.container/clones:/server/clones
+    extra_hosts:
+      - 'localdc:${HOST_IP:-127.0.0.1}'
 
   api:
     image: dc_api:latest
