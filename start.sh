@@ -18,4 +18,4 @@ docker load -i $USR_DIR/registry/dc_bundle.tar.gz
 docker load -i $USR_DIR/registry/dc_api.tar.gz
 docker load -i $USR_DIR/registry/dc_website.tar.gz
 
-docker-compose --file $USR_DIR/docker-compose.yml --project-directory $PWD --log-level ERROR  up -V
+docker-compose -p deepcode --file $USR_DIR/docker-compose.yml --project-directory $PWD --log-level ERROR  up -V
