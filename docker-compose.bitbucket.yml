@@ -2,27 +2,12 @@ version: '3.7'
 
 services:
 
-  # bitbucket_pg:
-  #   image: postgres:9.6.2-alpine
-  #   restart: unless-stopped
-  #   environment:
-  #     POSTGRES_USER: bitbucket
-  #     POSTGRES_PASSWORD: bitbucket
-  #     POSTGRES_DB: bitbucket
-  #     PGDATA: /var/lib/postgresql/data
-  #   ports:
-  #     - '5433:5432'
-  #   volumes:
-  #     - ./.container/bitbucket_pg_data:/var/lib/postgresql/data/
-
   bitbucket:
     image: 'atlassian/bitbucket-server:latest'
     restart: unless-stopped
     container_name: bitbucket
     environment:
       JMX_ENABLED: 'false'
-    # depends_on:
-    #   - bitbucket_pg
     ports:
       - '7990:7990'
       - '7999:7999'
