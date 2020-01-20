@@ -18,4 +18,19 @@ docker load -i $USR_DIR/registry/dc_bundle.tar.gz
 docker load -i $USR_DIR/registry/dc_api.tar.gz
 docker load -i $USR_DIR/registry/dc_website.tar.gz
 
-docker-compose -p deepcode --file $USR_DIR/docker-compose.yml --project-directory $PWD --log-level ERROR  up -V
+# Define cleanup procedure
+cleanup() {
+  echo "Container stopped, performing cleanup..."
+  # For some reasons these containers don't want to stop: redis and suggestion
+  docker-compose -p deepcode --file $USR_DIR/docker-compose.yml --project-directory $PWD down
+  echo "Stoped all docker-compose containers. Quitting..."
+}
+
+# Trap SIGTERM and SIGKILL
+trap 'cleanup' EXIT
+
+# Execute a command
+instance=$(docker-compose -p deepcode --file $USR_DIR/docker-compose.yml --project-directory $PWD --log-level ERROR  up -V)
+
+# Wait
+wait

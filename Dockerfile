@@ -9,7 +9,8 @@ ENV USR_DIR /usr/src/app
 
 RUN mkdir -p ${USR_DIR}
 WORKDIR ${USR_DIR}
-CMD source ${USR_DIR}/start.sh
+ENTRYPOINT [] 
+CMD ["/start.sh"]
 
 ARG VERSION=latest
 ENV VERSION ${VERSION}
@@ -20,7 +21,7 @@ ENV EXPIRATION_DATE ${EXPIRATION_DATE}
 ARG NODE_TLS_REJECT_UNAUTHORIZED=1
 ENV NODE_TLS_REJECT_UNAUTHORIZED ${NODE_TLS_REJECT_UNAUTHORIZED}
 
-COPY start.sh ./
+COPY start.sh /start.sh
 COPY docker-compose* ./
 COPY registry ./registry
 COPY example* ./
