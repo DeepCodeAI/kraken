@@ -1,9 +1,7 @@
-# Deepcode build/test guide
-
-Self-managed container for Deepcode
-
+# Self-managed container for Deepcode
 
 ## Build process
+
 The process is super simple. Just run:
   ```
   source ./build.sh
@@ -11,61 +9,43 @@ The process is super simple. Just run:
 
 It will create a new tarball. Just upload it to https://drive.google.com/drive/u/0/folders/1jjFQA6aGNuOeEhg0JaUDC7mKbDWa5J-X
 
+## Test Bitbucket server integration
 
-# Set Host IP
-On Mac:
-  ```
-  echo "export HOST_IP=$(ipconfig getifaddr en0)" | tee -a ~/.bashrc
-  ```
-On Linux:
-  ```
-  sudo apt-get install net-tools     # for ifconfig
-  export HOST_IP=$(ifconfig enp24s0 | fgrep inet | head -1 | awk '{print $2}') | tee -a ~/.bashrc
-  ```
-Manually copy this dynamic IP address to /etc/hosts using sudo for hostname localdc
+Complete guide is [online](https://www.deepcode.ai/docs/Self-Managed%20Integrations%2FBitbucket%20Server)
 
-# Run local instance of Gitlab together with Deepcode container
+### Start Bitbucket locally:
   ```
-  docker-compose -f docker-compose.gitlab.yml up -d 
+  docker-compose -f <product-repo-path>/dc_op/bitbucket/docker-compose.yml up -d --remove-orphans  || true
   ```
 
-Once it's running, setup an Application following:
-https://www.deepcode.ai/docs/Self-Managed%20Integrations%2FGitLab
+### Start Deepcode container locally:
+  ```
+  docker run --rm -it \
+    -v '/var/run/docker.sock:/var/run/docker.sock' \
+    -v $PWD:$PWD \
+    -w $PWD \
+    --env HOST_IP \
+    --env "BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY=$(cat <product-repo-path>/dc_op/bitbucket/deepcode.pem)" \
+    --env-file <product-repo-path>/dc_op/bitbucket/local.env \
+    --name deepcode \
+    deepcode
+  ```
+  
+## Test Gitlab integration:
 
-## Configuration
-Copy example configuration and fill it
+### Start Gitlab locally:
   ```
-  cp ./example.gl.evn ./gl.env
-  ```
-
-Copy application ID and secret and personal access token from your running Gitlab instance
-
-## Run container for Gitlab integration:
-  ```
-  source ./run_local_gl_op.sh
-  ```
-
-# Bitbucket server
-  ```
-  docker-compose -f docker-compose.bitbucket.yml up -d 
-  ```
-
-Once it's running, setup an Application following: https://www.deepcode.ai/docs/Self-Managed%20Integrations%2FBitbucket%20Server
-
-## Configuration
-Copy example configuration and fill it
-  ```
-  cp ./example.bb.evn ./bb.env
+  docker-compose -f <product-repo-path>/dc_op/gitlab/docker-compose.yml up -d --remove-orphans || true
   ```
 
-Fill all required fields
-
-Export private key into variable:
+### Start Deepcode container locally
   ```
-  export BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY=$(cat ./deepcode.pem)
-  ```
-
-## Run container for BitBucket Server:
-  ```
-  source ./run_local_bb_op.sh
+  docker run --rm -it \
+    -v '/var/run/docker.sock:/var/run/docker.sock' \
+    -v $PWD:$PWD \
+    -w $PWD \
+    --env HOST_IP \
+    --env-file <product-repo-path>/dc_op/gitlab/local.env \
+    --name deepcode \
+    deepcode
   ```
