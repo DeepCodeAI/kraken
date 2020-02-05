@@ -24,4 +24,3 @@ ENV NODE_TLS_REJECT_UNAUTHORIZED ${NODE_TLS_REJECT_UNAUTHORIZED}
 COPY start.sh /start.sh
 COPY docker-compose* ./
 COPY registry ./registry
-COPY example* ./
