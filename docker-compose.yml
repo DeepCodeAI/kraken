@@ -51,6 +51,7 @@ services:
   api:
     image: dc_api:latest
     environment:
+      WAIT_HOSTS: db:3306, redis:6379
       PRODUCT: ${PRODUCT}
       MYSQL_HOST: db
       MYSQL_PORT: 3306
@@ -65,6 +66,7 @@ services:
       GIT_LAB_URL: ${GIT_LAB_URL}
       GIT_LAB_APP_ID: ${GIT_LAB_APP_ID}
       GIT_LAB_APP_SECRET: ${GIT_LAB_APP_SECRET}
+      GIT_LAB_PERSONAL_ACCESS_TOKEN: ${GIT_LAB_PERSONAL_ACCESS_TOKEN}
       BIT_BUCKET_SERVER_URL: ${BIT_BUCKET_SERVER_URL}
       BIT_BUCKET_SERVER_OAUTH_CONSUMER_KEY: ${BIT_BUCKET_SERVER_OAUTH_CONSUMER_KEY}
       BIT_BUCKET_SERVER_USER_NAME: ${BIT_BUCKET_SERVER_USER_NAME}
@@ -72,7 +74,6 @@ services:
       BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY: ${BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY}
       NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-1}
     restart: unless-stopped
-    command: ["yarn", "start"]
     ports:
       - '3000'
     depends_on:
