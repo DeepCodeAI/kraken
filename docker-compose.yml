@@ -24,7 +24,7 @@ services:
     image: dc_suggest:latest
     init: true
     entrypoint: []
-    command: ./suggest_v5 --models ./models --parsers_dir parsing --linters_dir linters --transform python,java,javascript --alsologtostderr --eslint --pmd --pylint --tslint --num_suggest_server_threads 2 --num_upload_server_threads 2 --num_lint_upload_server_threads 2 --num_parse_threads 2
+    command: ./suggest_v5 --models ./models --parsers_dir parsing --linters_dir linters --transform python,java,javascript,cpp --alsologtostderr --eslint --pmd --pylint --tslint --num_suggest_server_threads 2 --num_upload_server_threads 2 --num_lint_upload_server_threads 2 --num_parse_threads 2
     environment: 
       GLOG_minloglevel: 2
     ports:
