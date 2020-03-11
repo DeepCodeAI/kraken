@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
+# check that expiration date is set
 if [ -z ${EXPIRATION_DATE+x} ]; then
   echo 'Please set date in format "%Y-%m-%d" to environment EXPIRATION_DATE, like: ';
   echo 'export EXPIRATION_DATE="2020-03-01"'
-  return;
+  return 1;
 fi
+
+# check that a valid date is provided
+date "+%Y-%m-%d" -d $EXPIRATION_DATE > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+  echo "Please specify a valid date, ${EXPIRATION_DATE} is invalid";
+  return 1;
+fi
+
 
 mkdir -p registry
 
