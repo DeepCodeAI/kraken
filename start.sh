@@ -14,7 +14,9 @@ if [ $(date +%s) -gt $(date -d $EXPIRATION_DATE +%s) ]; then
 fi
 
 docker load -i $USR_DIR/registry/dc_suggest.tar.gz
+docker load -i $USR_DIR/registry/dc_redis.tar.gz
 docker load -i $USR_DIR/registry/dc_bundle.tar.gz
+docker load -i $USR_DIR/registry/dc_mysql.tar.gz
 docker load -i $USR_DIR/registry/dc_api.tar.gz
 docker load -i $USR_DIR/registry/dc_website.tar.gz
 
