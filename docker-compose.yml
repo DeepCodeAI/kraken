@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   db:
-    image: mysql:5.7
+    image: dc_mysql:latest
     restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password --event-scheduler=ON
     environment:
@@ -14,7 +14,7 @@ services:
 
   redis:
     restart: unless-stopped
-    image: redis:5.0.7-alpine
+    image: dc_redis:latest
     init: true
     volumes:
       - ${PWD:-.}/.container/redisdata:/data
