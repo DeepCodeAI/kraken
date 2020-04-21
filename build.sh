@@ -7,6 +7,8 @@ if [ -z ${EXPIRATION_DATE+x} ]; then
   return 1;
 fi
 
+mkdir -p registry
+
 echo "Saving suggest image"
 docker pull deepbuild:5000/dc_suggest:dev
 docker tag deepbuild:5000/dc_suggest:dev dc_suggest:latest

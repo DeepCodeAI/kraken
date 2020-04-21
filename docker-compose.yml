@@ -35,9 +35,10 @@ services:
     image: dc_bundle:latest
     init: true
     entrypoint: []
-    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:${SUGGESTION_SERVER_PORT:-5000}" --upload_server="suggestion:${SUGGESTION_UPLOAD_PORT:-5001}" --lint_upload_server="suggestion:${SUGGESTION_LINT_PORT:-5002}" --temp_dir="./clones" --alsologtostderr --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4 --num_lint_upload_threads_per_repo=4
+    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:${SUGGESTION_SERVER_PORT:-5000}" --upload_server="suggestion:${SUGGESTION_UPLOAD_PORT:-5001}" --lint_upload_server="suggestion:${SUGGESTION_LINT_PORT:-5002}" --temp_dir="./clones" --alsologtostderr --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4 --num_lint_upload_threads_per_repo=4 --git_disable_cert_checks="${GIT_DISABLE_CERT_CHECK:-false}"
     environment: 
       GLOG_minloglevel: 2
+      GIT_DISABLE_CERT_CHECK: ${GIT_DISABLE_CERT_CHECK:-false}
     depends_on:
       - redis
       - suggestion
@@ -66,12 +67,12 @@ services:
       GIT_LAB_URL: ${GIT_LAB_URL}
       GIT_LAB_APP_ID: ${GIT_LAB_APP_ID}
       GIT_LAB_APP_SECRET: ${GIT_LAB_APP_SECRET}
-      GIT_LAB_PERSONAL_ACCESS_TOKEN: ${GIT_LAB_PERSONAL_ACCESS_TOKEN}
-      BIT_BUCKET_SERVER_URL: ${BIT_BUCKET_SERVER_URL}
-      BIT_BUCKET_SERVER_OAUTH_CONSUMER_KEY: ${BIT_BUCKET_SERVER_OAUTH_CONSUMER_KEY}
-      BIT_BUCKET_SERVER_USER_NAME: ${BIT_BUCKET_SERVER_USER_NAME}
-      BIT_BUCKET_SERVER_PASSWORD: ${BIT_BUCKET_SERVER_PASSWORD}
-      BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY: ${BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY}
+      GIT_LAB_PERSONAL_ACCESS_TOKEN: ${GIT_LAB_PERSONAL_ACCESS_TOKEN:-}
+      BIT_BUCKET_SERVER_URL: ${BIT_BUCKET_SERVER_URL:-}
+      BIT_BUCKET_SERVER_OAUTH_CONSUMER_KEY: ${BIT_BUCKET_SERVER_OAUTH_CONSUMER_KEY:-}
+      BIT_BUCKET_SERVER_USER_NAME: ${BIT_BUCKET_SERVER_USER_NAME:-}
+      BIT_BUCKET_SERVER_PASSWORD: ${BIT_BUCKET_SERVER_PASSWORD:-}
+      BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY: ${BIT_BUCKET_SERVER_OAUTH_PRIVATE_KEY:-}
       NODE_TLS_REJECT_UNAUTHORIZED: ${NODE_TLS_REJECT_UNAUTHORIZED:-1}
     restart: unless-stopped
     ports:

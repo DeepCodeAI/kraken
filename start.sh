@@ -3,6 +3,9 @@
 : "${PRODUCT:?Need to set PRODUCT non-empty}"
 : "${HOST_URL:?Need to set HOST_URL non-empty}"
 
+
+if [[ "$NODE_TLS_REJECT_UNAUTHORIZED" == "1" ]]; then GIT_DISABLE_CERT_CHECK="false"; else GIT_DISABLE_CERT_CHECK="true"; fi
+
 if [ -z ${EXPIRATION_DATE+x} ]; then
   echo "Expiration date must be set. This is a bug. Please contact Deepcode for correct version of the file"
   exit 1
@@ -30,6 +33,7 @@ cleanup() {
 
 # Trap SIGTERM and SIGKILL
 trap 'cleanup' EXIT
+
 
 # Execute a command
 instance=$(docker-compose -p deepcode --file $USR_DIR/docker-compose.yml --project-directory $PWD --log-level ERROR  up -V)
