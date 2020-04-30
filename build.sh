@@ -15,6 +15,11 @@ docker tag deepbuild:5000/dc_suggest:dev dc_suggest:latest
 docker save dc_suggest:latest | gzip > registry/dc_suggest.tar.gz
 
 echo "Saving redis image"
+docker pull mongo:4.2.5-bionic
+docker tag mongo:4.2.5-bionic dc_mongo:latest
+docker save dc_mongo:latest | gzip > registry/dc_mongo.tar.gz
+
+echo "Saving redis image"
 docker pull redis:5.0.7-alpine
 docker tag redis:5.0.7-alpine dc_redis:latest
 docker save dc_redis:latest | gzip > registry/dc_redis.tar.gz

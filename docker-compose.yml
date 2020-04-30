@@ -11,6 +11,19 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - ${PWD:-.}/.container/mysqldata:/var/lib/mysql
+  
+  mongo:
+    image: dc_mongo:latest
+    restart: unless-stopped
+    init: true
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=kraken
+      - MONGO_INITDB_ROOT_PASSWORD=krakenloveseepcode
+      - MONGO_INITDB_DATABASE=deepcode
+    volumes:
+      - ${PWD:-.}/.container/mongodata:/data/db
+    ports:
+      - "27017"
 
   redis:
     restart: unless-stopped
@@ -23,8 +36,6 @@ services:
     restart: unless-stopped
     image: dc_suggest:latest
     init: true
-    entrypoint: []
-    command: ./suggest_v5 --models ./models --parsers_dir parsing --linters_dir linters --transform python,java,javascript,cpp --alsologtostderr --eslint --pmd --pylint --tslint --num_suggest_server_threads 2 --num_upload_server_threads 2 --num_lint_upload_server_threads 2 --num_parse_threads 2
     environment: 
       GLOG_minloglevel: 2
     ports:
@@ -35,7 +46,7 @@ services:
     image: dc_bundle:latest
     init: true
     entrypoint: []
-    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:${SUGGESTION_SERVER_PORT:-5000}" --upload_server="suggestion:${SUGGESTION_UPLOAD_PORT:-5001}" --lint_upload_server="suggestion:${SUGGESTION_LINT_PORT:-5002}" --temp_dir="./clones" --alsologtostderr --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4 --num_lint_upload_threads_per_repo=4 --git_disable_cert_checks="${GIT_DISABLE_CERT_CHECK:-false}"
+    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:${SUGGESTION_SERVER_PORT:-5000}" --upload_server="suggestion:${SUGGESTION_UPLOAD_PORT:-5001}" --lint_upload_server="suggestion:${SUGGESTION_LINT_PORT:-5002}" --temp_dir="./clones" --alsologtostderr --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4 --health-check-enabled=false --num_lint_upload_threads_per_repo=4 --git_disable_cert_checks="${GIT_DISABLE_CERT_CHECK:-false}"
     environment: 
       GLOG_minloglevel: 2
       GIT_DISABLE_CERT_CHECK: ${GIT_DISABLE_CERT_CHECK:-false}
@@ -59,10 +70,15 @@ services:
       MYSQL_DATABASE: deepcode
       MYSQL_USERNAME: root
       MYSQL_PASSWORD: ""
+      MONGO_URL: mongodb://kraken:krakenloveseepcode@mongo:27017/deepcode?authSource=admin
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 1
       NODE_ENV: production
       BUNDLE_SERVER_URL: http://bundle_server:8001
       HOST_URL: ${HOST_URL}
       EXPOSED_HOST_URL: ${EXPOSED_HOST_URL}
+      WAIT_HOSTS: db:3306, redis:6379, mongo:27017, bundle_server:8001
       LOG_GIT_HUB_RESPONSE_TIME: 0
       GIT_LAB_URL: ${GIT_LAB_URL}
       GIT_LAB_APP_ID: ${GIT_LAB_APP_ID}
@@ -79,6 +95,8 @@ services:
       - '3000'
     depends_on:
       - db
+      - mongo
+      - redis
       - bundle_server
     extra_hosts:
       - 'localdc:${HOST_IP:-127.0.0.1}'
