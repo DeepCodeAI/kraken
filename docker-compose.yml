@@ -11,6 +11,8 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes:
       - ${PWD:-.}/.container/mysqldata:/var/lib/mysql
+    ports:
+      - "3306"
   
   mongo:
     image: dc_mongo:latest
@@ -31,6 +33,8 @@ services:
     init: true
     volumes:
       - ${PWD:-.}/.container/redisdata:/data
+    ports:
+      - "6379"
 
   suggestion:
     restart: unless-stopped
@@ -46,7 +50,7 @@ services:
     image: dc_bundle:latest
     init: true
     entrypoint: []
-    command: bash ./start.sh --redis_server="redis:6379" --server_port=8001 --suggest_server="suggestion:${SUGGESTION_SERVER_PORT:-5000}" --upload_server="suggestion:${SUGGESTION_UPLOAD_PORT:-5001}" --lint_upload_server="suggestion:${SUGGESTION_LINT_PORT:-5002}" --temp_dir="./clones" --alsologtostderr --num_server_threads=8 --num_upload_threads=4 -- num_lint_upload_threads=4 --num_upload_threads_per_repo=4 --health-check-enabled=false --num_lint_upload_threads_per_repo=4 --git_disable_cert_checks="${GIT_DISABLE_CERT_CHECK:-false}"
+    command: bash ./start.sh --redis_server="redis:6379" --suggest_server="suggestion:${SUGGESTION_SERVER_PORT:-5000}" --upload_server="suggestion:${SUGGESTION_UPLOAD_PORT:-5001}" --lint_upload_server="suggestion:${SUGGESTION_LINT_PORT:-5002}" --temp_dir="./clones" --alsologtostderr --num_server_threads=8 --num_upload_threads=4 --num_lint_upload_threads=4 --health-check-enabled=false --git_disable_cert_checks="${GIT_DISABLE_CERT_CHECK:-false}"
     environment: 
       GLOG_minloglevel: 2
       GIT_DISABLE_CERT_CHECK: ${GIT_DISABLE_CERT_CHECK:-false}
@@ -54,7 +58,7 @@ services:
       - redis
       - suggestion
     ports:
-      - '8001'
+      - "8001-8002"
     volumes:
       - ${PWD:-.}/.container/clones:/server/clones
     extra_hosts:
@@ -63,7 +67,7 @@ services:
   api:
     image: dc_api:latest
     environment:
-      WAIT_HOSTS: db:3306, redis:6379
+      WAIT_HOSTS: db:3306, redis:6379, mongo:27017, bundle_server:8002
       PRODUCT: ${PRODUCT}
       MYSQL_HOST: db
       MYSQL_PORT: 3306
@@ -75,10 +79,10 @@ services:
       REDIS_PORT: 6379
       REDIS_DB: 1
       NODE_ENV: production
-      BUNDLE_SERVER_URL: http://bundle_server:8001
+      BUNDLE_SERVER_URL: bundle_server:8002
       HOST_URL: ${HOST_URL}
-      EXPOSED_HOST_URL: ${EXPOSED_HOST_URL}
-      WAIT_HOSTS: db:3306, redis:6379, mongo:27017, bundle_server:8001
+      EXPOSED_HOST_URL: ${EXPOSED_HOST_URL:-}
+      WAIT_HOSTS: db:3306, redis:6379, mongo:27017, bundle_server:8002
       LOG_GIT_HUB_RESPONSE_TIME: 0
       GIT_LAB_URL: ${GIT_LAB_URL}
       GIT_LAB_APP_ID: ${GIT_LAB_APP_ID}
