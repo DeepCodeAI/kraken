@@ -37,7 +37,7 @@ trap 'cleanup' EXIT
 
 
 # Execute a command
-instance=$(docker-compose -p deepcode --file $USR_DIR/docker-compose.yml --project-directory $PWD --log-level ERROR  up -V)
+instance=$(GIT_DISABLE_CERT_CHECK=$GIT_DISABLE_CERT_CHECK docker-compose -p deepcode -f $USR_DIR/docker-compose.yml --project-directory $PWD --verbose --log-level ERROR up --remove-orphans -V)
 
 # Wait
 wait
