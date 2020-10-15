@@ -50,10 +50,11 @@ services:
     image: dc_bundle:latest
     init: true
     entrypoint: []
-    command: bash ./start.sh --redis_server="redis:6379" --suggest_server="suggestion:5000" --upload_server="suggestion:5001" --lint_upload_server="suggestion:5002" --temp_dir="./clones" --alsologtostderr --health-check-enabled=false --git_disable_cert_checks=${GIT_DISABLE_CERT_CHECK:-false}
+    command: bash ./start.sh --redis_server="redis:6379" --suggest_server="suggestion:5000" --upload_server="suggestion:5001" --lint_upload_server="suggestion:5002" --temp_dir="./clones" --alsologtostderr --git_disable_cert_checks=${GIT_DISABLE_CERT_CHECK:-false}
     environment: 
       GLOG_minloglevel: 2
       GIT_DISABLE_CERT_CHECK: ${GIT_DISABLE_CERT_CHECK}
+      GOOGLE_PROJECT_ID:
     depends_on:
       - redis
       - suggestion
